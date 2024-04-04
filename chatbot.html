@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot Interface</title>
+    <style>
+        #chatbox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            height: 300px;
+            overflow-y: scroll;
+        }
+        .response, .query {
+            border-bottom: 1px solid #eee;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox"></div>
+    <input type="text" id="query" placeholder="Type your query here...">
+    <button onclick="sendQuery()">Send</button>
+    <button onclick="refreshData()">Refresh Data</button>
+    <button onclick="clearChat()">Clear Chat</button>
+
+    <script>
+        function sendQuery() {
+            var query = document.getElementById('query').value;
+            fetch('/send?query=' + encodeURIComponent(query))
+                .then(response => response.text())
+                .then(text => {
+                    var chatbox = document.getElementById('chatbox');
+                    chatbox.innerHTML += '<div class="query"><strong>Query:</strong> ' + query + '</div>';
+                    chatbox.innerHTML += '<div class="response"><strong>Response:</strong> ' + text + '</div>';
+                    document.getElementById('query').value = ''; // Clear input box
+                    chatbox.scrollTop = chatbox.scrollHeight; // Scroll to bottom
+                });
+        }
+
+        function refreshData() {
+            fetch('/refresh')
+                .then(response => response.text())
+                .then(text => console.log(text));
+        }
+
+        function clearChat() {
+            document.getElementById('chatbox').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
